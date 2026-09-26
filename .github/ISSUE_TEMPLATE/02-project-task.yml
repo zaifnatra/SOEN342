@@ -1,0 +1,50 @@
+name: Project task
+description: Plan setup, analysis, design, implementation, testing, or deployment work.
+title: "[Task] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Track one deliverable and assign an owner using GitHub's Assignees field.
+  - type: input
+    id: iteration
+    attributes:
+      label: Iteration
+      placeholder: "0, I, II, or the relevant iteration/milestone"
+  - type: dropdown
+    id: activity
+    attributes:
+      label: Project activity
+      options:
+        - Repository and team setup
+        - Requirements and analysis
+        - Design and modeling
+        - Implementation
+        - Testing
+        - Deployment
+        - Documentation and presentation
+    validations:
+      required: true
+  - type: textarea
+    id: deliverable
+    attributes:
+      label: Deliverable and scope
+      description: What will be produced or changed? Reference the assignment section or use case.
+      placeholder: "For Iteration 0, examples include team registration, README credentials, or marker access."
+    validations:
+      required: true
+  - type: textarea
+    id: completion-criteria
+    attributes:
+      label: Completion criteria
+      description: List the concrete outcomes needed to finish this task.
+      placeholder: |
+        - [ ] Deliverable is available at ...
+        - [ ] Checked by ...
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and dependencies
+      description: Link prerequisite issues or models and any useful context. Implementation follows analysis and design.
