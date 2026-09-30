@@ -1,0 +1,39 @@
+name: Bug or artifact inconsistency
+description: Report incorrect behavior or a mismatch between project artifacts.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report a software bug or a mismatch between requirements, models, and code.
+  - type: input
+    id: reference
+    attributes:
+      label: Affected version / use case
+      placeholder: "Iteration, commit/branch, requirement/use-case ID, or artifact link"
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce or locate the inconsistency
+      description: Include inputs and steps for a bug, or exact file/diagram/section references for an artifact mismatch.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: Describe the correct behavior or content and cite the relevant requirement if known.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result and impact
+      description: What happens instead, and what work or scenario does it affect?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Environment and evidence
+      description: Add relevant OS/runtime details, CLI output, logs, screenshots, or model excerpts.

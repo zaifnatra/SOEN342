@@ -1,0 +1,46 @@
+name: Use case or requirement
+description: Define or revise system behavior and its acceptance criteria.
+title: "[Requirement] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe one feature or use case from the current assignment.
+        Assign an owner using GitHub's Assignees field; skip optional details that do not apply.
+  - type: input
+    id: reference
+    attributes:
+      label: Iteration and source
+      placeholder: "Iteration I; assignment section/page; requirement or use-case ID"
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal and scope
+      description: What must the system support, for whom, and why? Note any scope limits.
+    validations:
+      required: true
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Use-case scenario
+      description: Outline the actor's steps and the system's responses, including any important error case.
+      placeholder: |
+        Actor and starting conditions:
+        1. The actor ...
+        2. The system ...
+        Result:
+        Alternate/error case:
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance criteria
+      description: List observable, verifiable outcomes, including relevant exception cases.
+      placeholder: |
+        - [ ] Given ..., when ..., then ...
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Notes and related work
+      description: Link related issues/models and note dependencies, open questions, or business rules/OCL if relevant.
