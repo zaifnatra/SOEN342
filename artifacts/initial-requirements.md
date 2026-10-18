@@ -12,7 +12,7 @@
 | Use Case | Description | Actors |
 |---|---|---|
 |Register patient | Creates a new patient record with a unique patient identifier and personal information. RAMQ or private insurance informatiin is recorded (if available).  | Administrative Staff | 
-|Request/Book appointment | Schedule an appointment after checking the availability of healthcare professionals to avoid scheduling conflicts and verifying whether a referral is required.| Administrative Staff, Patient | 
+|Request/Book appointment | Requests and schedules an appointment after verifying the healthcare professional's availability, applicable scheduling constraints, and whether a medical referral is required. If all requirements are satisfied, the system automatically confirms the appointment and updates its status to confirmed.| Administrative Staff, Patient | 
 | Cancel an Appointment | Cancels an existing appointment and updates its status to cancelled in the system. | Administrative Staff, Patient |
 | Reschedule an Appointment |Changes an existing appointment to another available date or time after checking the healthcare professional's availability and applicable scheduling constraints.| Administrative Staff, Patient |
 | Referral creation | Creates a specialist consultation request identifying the patient, referring professional, reason for referral, requested specialty or profession, priority, and referral status. A referral may result in one or more appointments. | Referring Professional |
@@ -32,7 +32,6 @@
 |---|---|---|
 | Search for Patient | Searches for an existing patient using their insurance number, date of birth, phone number, or partial first or last name| Administrative Staff |
 | Register Patient Arrival | Records a patient's arrival at the clinic for their appointment. | Administrative Staff |
-| Confirm Appointment | Confirms a requested appointment and updates its status to confirmed in the system.| Administrative Staff |
 | View Patient Clinical Record | Allows authorized healthcare professionals to view a patient's clinical information based on their access permissions. | Healthcare Professional |
 | View Administrative Information | Allows administrative staff to view patient registration and appointment information based on their access permissions. | Administrative Staff |
 
