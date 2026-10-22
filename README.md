@@ -5,6 +5,11 @@ SOEN342: Software Requirements and Deployment
 - Sia Shah (40275251)
 - Maëlys Arnaud (40278798)
 
+## Use Cases
+
+The [initial requirements](artifacts/initial-requirements.md) list the critical and
+non-critical use cases, their descriptions, and actors.
+
 ## Contributing
 
 See the [team workflow](.github/CONTRIBUTING.md) for issue templates, PR guidance,
