@@ -39,6 +39,12 @@
 - Access to clinical and administrative information is restricted based on the user's role.
 - Relevant activities recorded by system, to support accountability and protection of confidentiality of patient’s information.
 
+## Assumptions: 
+ - Manage Healthcare Professional Assumptions for the SSD: 
+    The system description states that healthcare professionals have professional information, specilties, schedules and clinic locations. However, there is no explicit mention of who manages this information so for now we assume: 
+    1. Admin Staff is authrorized to manage healthcare professional information
+    2. Admin Staff can register new heatlhcare professionals and update existing healthcare professional information. 
+    3. Registering and updating healthcare professionals are grouped under the ManageHealthcareProfessional use case and admin staff can perform either action independently. 
 
 
 
