@@ -10,6 +10,8 @@ SOEN342: Software Requirements and Deployment
 The [initial requirements](artifacts/initial-requirements.md) list the critical and
 non-critical use cases, their descriptions, and actors.
 
+[SSD assumptions are here](artifacts/assumptions-and-notes.md).
+
 ## Contributing
 
 See the [team workflow](.github/CONTRIBUTING.md) for issue templates, PR guidance,
