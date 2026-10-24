@@ -2,6 +2,8 @@
 
 Assumptions and notes are grouped by contributor and SSD.
 
+Note that all SSD assume that the actor is already logged in.
+
 ## Sia
 
 ### Record Consultation
@@ -90,3 +92,20 @@ Draft modelling assumptions for the four SSDs below.
 - Insurance information is recorded when available.
 - Cancellation changes the appointment status to cancelled.
 - Access is restricted by role, and relevant activity is recorded.
+
+## Maëlys
+
+### Manage Professional Schedule
+
+[View SSD PNG](SSDs/ManageProfessionalSchedule.png)
+
+- We assume the modifications made to a healthcare professional schedule are Add and Delete (modify is Delete, then Add).
+- We assume the system is the one validating the addition of a new schedule.
+
+### Create Referral
+
+[View SSD PNG](SSDs/CreateReferral.png)
+
+- We assume that professionalId comes from the healthcare professional loggin.
+- We assume that the healthcare professional knows the patientId.
+- referredTarget is to designate the referred specialty or professional.
