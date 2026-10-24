@@ -17,8 +17,6 @@
 | Referral creation | Creates a specialist consultation request identifying the patient, referring professional, reason for referral, requested specialty or profession, priority, and referral status. A referral may result in one or more appointments. | Healthcare Professional |
 | Record Consultation | Records observations, diagnoses, treatments, and follow-up instructions in the patient's clinical record. Can include prescriptions and recommendations for follow-up appointments when necessary. | Healthcare Professional |
 | Issue Prescription | Creates a prescription for a patient containing one or more medications when needed. | Healthcare Professional |
-| Create Invoice |  Records the costs of medical services provided to a patient and generates an invoice containing the charges to be paid.  | Administrative Staff |
-| Record Payment | Tracks payments received for medical services | Administrative Staff |
 | Manage Healthcare Professional | Registers or updates healthcare professional information, including specialties and clinic locations. | Administrative Staff |
 | Manage Professional Schedule | Defines healthcare professional availability by location and checks for scheduling conflicts across locations. | Administrative Staff |
 | Request Follow-Up Appointment | Allows a healthcare professional to request a follow-up appointment after a consultation. The appointment is scheduled through the Book Appointment process. | Healthcare Professional |
