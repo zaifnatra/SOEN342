@@ -1,0 +1,18 @@
+# Fully Dressed Use Case: Create Referral
+
+| Field | Description |
+|---|---|
+| **ID** | UC-3 |
+| **Title** | Create Referral |
+| **Description** | An authenticated healthcare professional creates a new referral for a patient. The healthcare professional enters the necessary information: patientID, priority, clinical reason, and referred target that might be a medical speciality or professional. The system checks if all inputs are valid. If the checks pass, the system creates the referral. |
+| **Primary Actor** | Healthcare professional |
+| **Stakeholders and Interests** | **Patient:** Wants a referral for a specific specialty or professional.<br>**Referring Healthcare Professional:** Wants to refer a patient to another professional or speciality.<br>**Referred Healthcare Professional:** Needs a valid referral to conduct appointment(s). |
+| **Pre-Conditions** | - The healthcare professional's identity and role are already known to the system (assumption).<br>- The patient ID inputed is valid.<br>- The referred target is exists.<br>- Priority and clinical reasons are inputed. |
+| **Post-Conditions** | **Success:** A referral is created for the patient, referred healthcare professional/speciality, with priority, clinical reason. Its status is set to `approved`, and the system returns a confirmation.<br><br>**Failure:** No referral is created. The system returns an error explaining why the request was rejected. |
+| **Inputs** | 1. `patientID` (Identifier)<br>2. `professionalID` (Identifier)<br>3. `priority` (Priority)<br>4. `clinicalReason` (Clinical Reason)<br>5. `referredTarget` (Referred Speciality or Referred Professional) |
+| **Outputs** | **Success:** `confirmation(referralID, patientID, referredTarget, "confirmed")`.<br><br>**Failure:** `errorMessage(reason)`. |
+| **Main Success Scenario** | 1. The authenticated healthcare professional creates a referral using `createReferral(patientID, professionalID, priority, clinicalReason, referredTarget)`.<br>2. The system checks that the patient exists and the healthcare professional is authorized to create a referral for that patient.<br>3. The system checks that the referred target exists.<br>4. The system checks that all other inputs are filled.<br>5. The system creates the referral with the submitted details and automatically sets its status to `approved`.<br>6. The system returns the confirmation with the referral ID, patient name, and referred target.<br>7. The healthcare professional can repeat steps 1 to 6 until done with all referrals for that patient. |
+| **Extensions (Alternative / Failure Scenarios)** | **2a. Patient not found:**<br>1. The system returns an error. No referral is created.<br>2. The healthcare professional corrects the patient ID and retries from Step 1, or stops.<br><br>**2b. Healthcare professional is not authorized:**<br>1. The system returns an access denied error. No referral is created.<br>2. The use case ends.<br><br>**3a. Unvalid referred target inputed:**<br>1. The system returns an error explaining that the referred target does not exist. No referral is created.<br>2. The healthcare professional changes the booking details and retries from Step 3, or stops.**<br><br>4a. Other inputs missing:<br>**1. The system returns an error explaining missing inputs. No referral is created.<br>2. The healthcare professional supplies an appropriate referral and retries from Step 4, or stops.|
+| **Special Requirements** | N/A |
+| **Technology and Data Variations List** | `referredTarget` may be a specific professional or a medical speciality. |
+| **Open Issues** | 1. How do we (and do we) restrict the amount of appointments this referral can allow? |
