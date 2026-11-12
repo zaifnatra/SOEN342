@@ -10,9 +10,12 @@
 ## Critical Use Cases
 | Use Case | Description | Actors |
 |---|---|---|
-|Register patient | Creates a new patient record with a unique patient identifier and personal information. RAMQ or private insurance informatiin is recorded (if available).  | Administrative Staff | 
+|Register patient | Creates a new patient record with a unique patient identifier and personal information. RAMQ or private insurance information is recorded (if available).  | Administrative Staff | 
 |Request/Book appointment | Requests and schedules an appointment after verifying the healthcare professional's availability, applicable scheduling constraints, and whether a medical referral is required. If all requirements are satisfied, the system automatically confirms the appointment and updates its status to confirmed.| Administrative Staff, Patient | 
+| Join waitlist| Requests a placement on the waitlist for a specific professional, specialty, or date range. |Patient|
 | Cancel an Appointment | Cancels an existing appointment and updates its status to cancelled in the system. | Administrative Staff, Patient |
+|Remove patient from waitlist| (optional) Removing a patient from the waitlist, if the patient declines an appointment offer while on the waitlist. |Administrative Staff|
+|Change waitlisted patient priority| Change the priority status of a patient's waitlist position. |Administrative Staff|
 | Reschedule an Appointment |Changes an existing appointment to another available date or time after checking the healthcare professional's availability and applicable scheduling constraints.| Administrative Staff, Patient |
 | Referral creation | Creates a specialist consultation request identifying the patient, referring professional, reason for referral, requested specialty or profession, priority, and referral status. A referral may result in one or more appointments. | Healthcare Professional |
 | Record Consultation | Records observations, diagnoses, treatments, and follow-up instructions in the patient's clinical record. Can include prescriptions and recommendations for follow-up appointments when necessary. | Healthcare Professional |
