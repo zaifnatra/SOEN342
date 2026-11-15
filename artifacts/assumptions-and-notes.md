@@ -101,6 +101,8 @@ Draft modelling assumptions for the four SSDs below.
 
 - We assume the modifications made to a healthcare professional schedule are Add and Delete (modify is Delete, then Add).
 - We assume the system is the one validating the addition of a new schedule.
+- We assume Making Availability is the same as Manage Professional Schedule.
+- We assume recurring availability is stored as separate dated entries for professionals and resources, not as a recurrence pattern.
 
 ### Create Referral
 
@@ -109,3 +111,8 @@ Draft modelling assumptions for the four SSDs below.
 - We assume that professionalId comes from the healthcare professional loggin.
 - We assume that the healthcare professional knows the patientId.
 - referredTarget is to designate the referred specialty or professional.
+
+## Iteration II domain model
+
+- We assume professional and specialty waitlist entries may include a date range.
+- We assume DateRangeWaitlistEntry requires only a date range, without a professional or specialty.
