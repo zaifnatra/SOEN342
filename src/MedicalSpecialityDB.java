@@ -7,7 +7,7 @@ public class MedicalSpecialityDB {
     public MedicalSpeciality findOrCreate(String name) {
         String validName = Checks.text(name, "Specialty");
         for (MedicalSpeciality speciality : specialities) {
-            if (speciality.specialtyName().equalsIgnoreCase(validName)) {
+            if (speciality.getSpecialtyName().equalsIgnoreCase(validName)) {
                 return speciality;
             }
         }

@@ -5,12 +5,12 @@ public class ProfessionalScheduleDB {
     private final List<ProfessionalSchedule> schedules = new ArrayList<>();
 
     public ProfessionalSchedule find(String professionalID, String clinicLocationID) {
-        return schedules.stream().filter(schedule -> schedule.professional().professionalID().equals(professionalID)
-                && schedule.clinic().locationID().equals(clinicLocationID)).findFirst().orElse(null);
+        return schedules.stream().filter(schedule -> schedule.getProfessional().getProfessionalID().equals(professionalID)
+                && schedule.getClinic().getLocationID().equals(clinicLocationID)).findFirst().orElse(null);
     }
 
     public ProfessionalSchedule findOrCreate(HealthcareProfessional professional, ClinicLocation clinic) {
-        ProfessionalSchedule existing = find(professional.professionalID(), clinic.locationID());
+        ProfessionalSchedule existing = find(professional.getProfessionalID(), clinic.getLocationID());
         if (existing != null) {
             return existing;
         }

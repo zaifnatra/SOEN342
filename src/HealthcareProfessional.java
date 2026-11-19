@@ -1,18 +1,69 @@
-public record HealthcareProfessional(String professionalID, String firstName, String lastName,
-                                     String title, MedicalSpeciality speciality) {
-    public HealthcareProfessional {
-        firstName = Checks.text(firstName, "First name");
-        lastName = Checks.text(lastName, "Last name");
-        title = Checks.text(title, "Title");
-        Checks.required(speciality, "Specialty");
+public final class HealthcareProfessional {
+    // Identity and specialty stay fixed so schedules and accepted referrals remain valid.
+    private final String professionalID;
+    private String firstName;
+    private String lastName;
+    private String title;
+    private final MedicalSpeciality speciality;
+
+    public HealthcareProfessional(String professionalID, String firstName, String lastName, String title,
+                                  MedicalSpeciality speciality) {
+        this.professionalID = Checks.text(professionalID, "Professional ID");
+        setFirstName(firstName);
+        setLastName(lastName);
+        setTitle(title);
+        this.speciality = Checks.required(speciality, "Specialty");
     }
 
-    public String name() {
+    public String getProfessionalID() {
+        return professionalID;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = Checks.text(firstName, "First name");
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = Checks.text(lastName, "Last name");
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = Checks.text(title, "Title");
+    }
+
+    public MedicalSpeciality getSpeciality() {
+        return speciality;
+    }
+
+    // Equality uses stable identity, including when descriptive fields are edited.
+    @Override
+    public boolean equals(Object other) {
+        return this == other || other instanceof HealthcareProfessional that && professionalID.equals(that.professionalID);
+    }
+
+    @Override
+    public int hashCode() {
+        return professionalID.hashCode();
+    }
+
+    public String getName() {
         return firstName + " " + lastName;
     }
 
     @Override
     public String toString() {
-        return title + " " + name() + " | " + speciality;
+        return title + " " + getName() + " | " + speciality;
     }
 }

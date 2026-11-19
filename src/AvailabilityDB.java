@@ -14,14 +14,17 @@ public class AvailabilityDB {
     public void addAll(List<Availability> slots) {
         List<Availability> checked = new ArrayList<>(availabilities);
         for (Availability slot : slots) {
+            Checks.required(slot, "Availability");
             for (Availability existing : checked) {
-                if (existing.schedule().professional().equals(slot.schedule().professional())
-                        && existing.overlaps(slot.date(), slot.startTime(), slot.endTime())) {
+                if (existing.getSchedule().getProfessional().equals(slot.getSchedule().getProfessional())
+                        && existing.overlaps(slot.getDate(), slot.getStartTime(), slot.getEndTime())) {
                     throw new IllegalArgumentException("Overlapping professional availability, including across clinics: " + slot);
                 }
             }
             checked.add(slot);
         }
+        // Lock only after the entire batch passes overlap validation.
+        slots.forEach(Availability::lock);
         availabilities.addAll(slots);
     }
 
@@ -31,15 +34,15 @@ public class AvailabilityDB {
             throw new IllegalArgumentException("Search start must be before search end.");
         }
         return findAll().stream()
-                .filter(slot -> professionalID == null || slot.schedule().professional().professionalID().equals(professionalID))
-                .filter(slot -> clinicLocationID == null || slot.schedule().clinic().locationID().equals(clinicLocationID))
-                .filter(slot -> !slot.start().isBefore(from) && !slot.end().isAfter(to))
-                .filter(slot -> !appointmentDB.hasConflict(slot.schedule().professional().professionalID(),
-                        slot.date(), slot.startTime(), slot.endTime())).toList();
+                .filter(slot -> professionalID == null || slot.getSchedule().getProfessional().getProfessionalID().equals(professionalID))
+                .filter(slot -> clinicLocationID == null || slot.getSchedule().getClinic().getLocationID().equals(clinicLocationID))
+                .filter(slot -> !slot.getStart().isBefore(from) && !slot.getEnd().isAfter(to))
+                .filter(slot -> !appointmentDB.hasConflict(slot.getSchedule().getProfessional().getProfessionalID(),
+                        slot.getDate(), slot.getStartTime(), slot.getEndTime())).toList();
     }
 
     public List<Availability> findAll() {
-        return availabilities.stream().sorted(Comparator.comparing(Availability::start)
-                .thenComparing(slot -> slot.schedule().professional().name())).toList();
+        return availabilities.stream().sorted(Comparator.comparing(Availability::getStart)
+                .thenComparing(slot -> slot.getSchedule().getProfessional().getName())).toList();
     }
 }

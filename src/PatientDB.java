@@ -7,7 +7,7 @@ public class PatientDB {
     private final List<Patient> patients = new ArrayList<>();
 
     public Patient find(String patientID) {
-        return patients.stream().filter(patient -> patient.patientID().equals(patientID)).findFirst().orElse(null);
+        return patients.stream().filter(patient -> patient.getPatientID().equals(patientID)).findFirst().orElse(null);
     }
 
     public Patient createPatient(Map<String, String> personalInformation, InsuranceInformation insurance) {

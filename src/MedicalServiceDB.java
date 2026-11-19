@@ -6,8 +6,8 @@ public class MedicalServiceDB {
             new MedicalService("MS2", "Specialist consultation", true));
 
     public MedicalService find(String serviceType) {
-        return services.stream().filter(service -> service.serviceID().equals(serviceType)
-                || service.serviceName().equalsIgnoreCase(serviceType)).findFirst().orElse(null);
+        return services.stream().filter(service -> service.getServiceID().equals(serviceType)
+                || service.getServiceName().equalsIgnoreCase(serviceType)).findFirst().orElse(null);
     }
 
     public List<MedicalService> findAll() {

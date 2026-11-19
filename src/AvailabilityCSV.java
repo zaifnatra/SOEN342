@@ -132,8 +132,8 @@ public class AvailabilityCSV {
 
     private void validateProfessional(CsvSlot row) {
         HealthcareProfessional existing = healthcareProfessionalDB.findByName(row.firstName(), row.lastName());
-        if (existing != null && (!existing.title().equalsIgnoreCase(row.title())
-                || !existing.speciality().specialtyName().equalsIgnoreCase(row.specialty()))) {
+        if (existing != null && (!existing.getTitle().equalsIgnoreCase(row.title())
+                || !existing.getSpeciality().getSpecialtyName().equalsIgnoreCase(row.specialty()))) {
             throw new IllegalArgumentException("This professional already has different title/specialty details.");
         }
     }
@@ -141,10 +141,10 @@ public class AvailabilityCSV {
     private record CsvSlot(String firstName, String lastName, String title, String specialty, String clinic,
                            LocalDate date, LocalTime start, LocalTime end) {
         static CsvSlot from(Availability slot) {
-            HealthcareProfessional professional = slot.schedule().professional();
-            return new CsvSlot(professional.firstName(), professional.lastName(), professional.title(),
-                    professional.speciality().specialtyName(), slot.schedule().clinic().address(),
-                    slot.date(), slot.startTime(), slot.endTime());
+            HealthcareProfessional professional = slot.getSchedule().getProfessional();
+            return new CsvSlot(professional.getFirstName(), professional.getLastName(), professional.getTitle(),
+                    professional.getSpeciality().getSpecialtyName(), slot.getSchedule().getClinic().getAddress(),
+                    slot.getDate(), slot.getStartTime(), slot.getEndTime());
         }
 
         boolean sameProfessional(CsvSlot other) {

@@ -86,7 +86,7 @@ public class Console {
         Checks.required(requestedDateTime, "Appointment date/time");
         Availability slot = searchAvailability(professionalID, clinicLocationID, requestedDateTime,
                 requestedDateTime.toLocalDate().plusDays(1).atStartOfDay()).stream()
-                .filter(available -> available.start().equals(requestedDateTime)).findFirst()
+                .filter(available -> available.getStart().equals(requestedDateTime)).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No free slot starts at the requested time."));
         Referral referral = referralID == null || referralID.isBlank() ? null
                 : Checks.required(referralDB.find(referralID), "Referral");
@@ -136,8 +136,8 @@ public class Console {
         String specialty = Checks.text(ask("Specialty"), "Specialty");
         String address = Checks.text(ask("Clinic name/address"), "Clinic name/address");
         HealthcareProfessional existing = healthcareProfessionalDB.findByName(firstName, lastName);
-        if (existing != null && (!existing.title().equalsIgnoreCase(title)
-                || !existing.speciality().specialtyName().equalsIgnoreCase(specialty))) {
+        if (existing != null && (!existing.getTitle().equalsIgnoreCase(title)
+                || !existing.getSpeciality().getSpecialtyName().equalsIgnoreCase(specialty))) {
             throw new IllegalArgumentException("This professional already has different title/specialty details.");
         }
         HealthcareProfessional professional = healthcareProfessionalDB.findOrCreate(firstName, lastName, title,
@@ -163,8 +163,8 @@ public class Console {
         System.out.println("Whose availability do you want to add?");
         HealthcareProfessional professional = choose(healthcareProfessionalDB.findAll(), "Professional");
         List<ClinicLocation> clinics = clinicLocationDB.findAll().stream()
-                .filter(clinic -> professionalScheduleDB.find(professional.professionalID(), clinic.locationID()) != null).toList();
-        System.out.println("Where will " + professional.title() + " " + professional.name() + " see patients?");
+                .filter(clinic -> professionalScheduleDB.find(professional.getProfessionalID(), clinic.getLocationID()) != null).toList();
+        System.out.println("Where will " + professional.getTitle() + " " + professional.getName() + " see patients?");
         System.out.println("Only clinics registered for this professional are listed. Use option 2 to add another workplace.");
         ClinicLocation clinic = choose(clinics, "Clinic location");
         System.out.println("Enter the first and last dates separately, one date per answer. Both dates are included.");
@@ -174,7 +174,7 @@ public class Console {
         String pattern = ask("Repeat: DAILY, MONTHLY, or weekdays e.g. MONDAY,WEDNESDAY");
         LocalTime start = askTime("Slot start time on each matching day");
         LocalTime end = askTime("Slot end time on each matching day");
-        List<Availability> slots = makeAvailability(professional.professionalID(), clinic.locationID(), from, to, pattern, start, end);
+        List<Availability> slots = makeAvailability(professional.getProfessionalID(), clinic.getLocationID(), from, to, pattern, start, end);
         System.out.println("Created " + slots.size() + " slots. Each interval is booked as one appointment.");
         display(slots);
     }
@@ -186,8 +186,8 @@ public class Console {
         System.out.println("Enter the first and last search dates separately. Both dates are included; repeat the date for one day only.");
         LocalDate from = askDate("First date to search");
         LocalDate to = askLastDate(from);
-        display(searchAvailability(professional == null ? null : professional.professionalID(),
-                clinic == null ? null : clinic.locationID(), from.atStartOfDay(), to.plusDays(1).atStartOfDay()));
+        display(searchAvailability(professional == null ? null : professional.getProfessionalID(),
+                clinic == null ? null : clinic.getLocationID(), from.atStartOfDay(), to.plusDays(1).atStartOfDay()));
     }
 
     private void bookAppointment() {
@@ -197,13 +197,13 @@ public class Console {
         Availability slot = choose(searchAvailability(null, null, LocalDateTime.MIN, LocalDateTime.MAX), "Appointment slot");
         MedicalService service = choose(medicalServiceDB.findAll(), "Type of consultation");
         String referralID = null;
-        if (service.referralRequired()) {
+        if (service.isReferralRequired()) {
             List<Referral> eligible = referralDB.findAll().stream()
-                    .filter(referral -> referral.isValidFor(patient, slot.schedule().professional(), service)).toList();
-            referralID = choose(eligible, "Referral (use option 9 first if none)").referralID();
+                    .filter(referral -> referral.isValidFor(patient, slot.getSchedule().getProfessional(), service)).toList();
+            referralID = choose(eligible, "Referral (use option 9 first if none)").getReferralID();
         }
-        Appointment appointment = bookAppointment(patient.patientID(), slot.schedule().professional().professionalID(),
-                slot.schedule().clinic().locationID(), service.serviceID(), slot.start(), referralID);
+        Appointment appointment = bookAppointment(patient.getPatientID(), slot.getSchedule().getProfessional().getProfessionalID(),
+                slot.getSchedule().getClinic().getLocationID(), service.getServiceID(), slot.getStart(), referralID);
         System.out.println("Appointment confirmed: " + appointment);
     }
 
