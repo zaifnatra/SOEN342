@@ -116,3 +116,16 @@ Draft modelling assumptions for the four SSDs below.
 
 - We assume professional and specialty waitlist entries may include a date range.
 - We assume DateRangeWaitlistEntry requires only a date range, without a professional or specialty.
+
+## Iteration II PoC CSV assumptions
+
+- Import asks only for a filename within `data/`, defaulting to `availability.csv`
+  (Main Clinic) on Enter. `availability-second-clinic.csv` provides Second Clinic data.
+  Users can add other availability CSVs to `data/` and enter their filenames.
+- Import creates the professionals, specialties, clinics and schedules referenced by the
+  availability rows. An omitted `Clinic` column means Main Clinic.
+- The PoC imports availability only. The handout's booked-appointment and waiting-list
+  tables are additional examples, not implemented import formats. Patients are registered
+  and appointments are booked through the menu; waitlist implementation is deferred.
+- Session data starts empty. Import is explicit, and export saves availability only,
+  including booked intervals, without saving patients, referrals or appointment records.
