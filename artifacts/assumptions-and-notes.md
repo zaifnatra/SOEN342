@@ -116,3 +116,25 @@ Draft modelling assumptions for the four SSDs below.
 
 - We assume professional and specialty waitlist entries may include a date range.
 - We assume DateRangeWaitlistEntry requires only a date range, without a professional or specialty.
+
+## Iteration II PoC editing assumptions
+
+- Referral creation is not exposed in the Iteration II PoC menu. Test booking with
+  General consultation; specialist consultations still require a referral and cannot
+  be booked through this menu without one. Referral classes remain in the code skeleton.
+- The PoC assumes a successful workflow: callers do not use setters to change published
+  availability or a referral target already used in a booking. Lock flags are omitted;
+  setters validate their inputs but do not recheck existing bookings or schedule conflicts.
+
+## Iteration II PoC CSV assumptions
+
+- Import asks only for a filename within `data/`, defaulting to `availability.csv`
+  (Main Clinic) on Enter. `availability-second-clinic.csv` provides Second Clinic data.
+  Users can add other availability CSVs to `data/` and enter their filenames.
+- Import creates the professionals, specialties, clinics and schedules referenced by the
+  availability rows. An omitted `Clinic` column means Main Clinic.
+- The PoC imports availability only. The handout's booked-appointment and waiting-list
+  tables are additional examples, not implemented import formats. Patients are registered
+  and appointments are booked through the menu; waitlist implementation is deferred.
+- Session data starts empty. Import is explicit, and export saves availability only,
+  including booked intervals, without saving patients, referrals or appointment records.
