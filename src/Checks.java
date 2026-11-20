@@ -11,6 +11,14 @@ final class Checks {
         return value.strip();
     }
 
+    static String phoneNumber(String value) {
+        String phoneNumber = text(value, "Telephone");
+        if (!phoneNumber.matches("[0-9]+")) {
+            throw new IllegalArgumentException("Telephone must contain digits only (0–9), without spaces or symbols.");
+        }
+        return phoneNumber;
+    }
+
     static <T> T required(T value, String field) {
         if (value == null) {
             throw new IllegalArgumentException(field + " was not found.");

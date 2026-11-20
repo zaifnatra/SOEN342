@@ -56,7 +56,7 @@ public final class Patient {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = Checks.text(phoneNumber, "Telephone");
+        this.phoneNumber = Checks.phoneNumber(phoneNumber);
     }
 
     public InsuranceInformation getInsuranceInformation() {

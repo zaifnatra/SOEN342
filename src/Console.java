@@ -33,18 +33,22 @@ public class Console {
         printHeading("SOEN 342 - Clinic Proof of Concept");
         while (true) {
             printHeading("Main menu");
+            if (patientDB.findAll().isEmpty()) {
+                System.out.println("""
+                        To test the functionality of the code, first register a patient (option 3).
+                        Then continue with the rest of the options.
+                        """);
+            }
             System.out.println("""
-                    1. Load professionals' appointment slots from a CSV file
+                    1. Import from CSV
                     2. Register a healthcare professional and their clinic workplace
                     3. Register a patient who needs an appointment
 
-                    4. Add dates and times when a healthcare professional can see patients
-                    5. Find unbooked appointment slots by professional, clinic and dates
-                    6. Book a patient's appointment with a healthcare professional
-                    7. View all patients' booked appointments
+                    4. Making Availability
+                    5. Searching for Availability
+                    6. Booking an appointment
 
-                    8. Save professionals' appointment slots to CSV (not patient bookings)
-                    9. Refer a patient to another professional or specialty
+                    7. Export to CSV
 
                     0. Exit (discard session data)
                     """);
@@ -56,17 +60,12 @@ public class Console {
                     case "4" -> makeAvailability();
                     case "5" -> searchAvailability();
                     case "6" -> bookAppointment();
-                    case "7" -> {
-                        printHeading("Patients' booked appointments");
-                        display(appointmentDB.findAll());
-                    }
-                    case "8" -> exportAvailability();
-                    case "9" -> createReferral();
+                    case "7" -> exportAvailability();
                     case "0" -> {
                         System.out.println("Goodbye. Session data is discarded; exported CSV files remain.");
                         return;
                     }
-                    default -> System.out.println("Choose a menu number from 0 to 9.");
+                    default -> System.out.println("Choose a menu number from 0 to 7.");
                 }
             } catch (IllegalArgumentException | IOException exception) {
                 System.out.println("Error: " + exception.getMessage());
@@ -116,7 +115,7 @@ public class Console {
     }
 
     private void importAvailability() throws IOException {
-        printHeading("Load professionals' appointment slots from CSV");
+        printHeading("Import from CSV");
         String filename = ask("CSV filename in data/ (Enter = availability.csv)");
         if (filename.isBlank()) {
             filename = "availability.csv";
@@ -150,7 +149,7 @@ public class Console {
     private void registerPatient() {
         printHeading("Register a patient");
         Map<String, String> personal = Map.of("firstName", ask("First name"), "lastName", ask("Last name"),
-                "dateOfBirth", askDate("Date of birth").toString(), "phoneNumber", ask("Telephone"));
+                "dateOfBirth", askDate("Date of birth").toString(), "phoneNumber", askPhoneNumber());
         String insuranceNumber = ask("RAMQ/private insurance number (Enter if none)");
         Map<String, String> insurance = insuranceNumber.isBlank() ? null
                 : Map.of("insuranceNumber", insuranceNumber, "insuranceType", ask("Insurance type (RAMQ or insurer name)"));
@@ -158,7 +157,7 @@ public class Console {
     }
 
     private void makeAvailability() {
-        printHeading("Add a professional's appointment slots");
+        printHeading("Making Availability");
         System.out.println("Create appointment slots for a healthcare professional (not a patient booking).");
         System.out.println("Whose availability do you want to add?");
         HealthcareProfessional professional = choose(healthcareProfessionalDB.findAll(), "Professional");
@@ -180,7 +179,7 @@ public class Console {
     }
 
     private void searchAvailability() {
-        printHeading("Find unbooked appointment slots");
+        printHeading("Searching for Availability");
         HealthcareProfessional professional = chooseOptional(healthcareProfessionalDB.findAll(), "Professional (0 = all)");
         ClinicLocation clinic = chooseOptional(clinicLocationDB.findAll(), "Clinic (0 = all)");
         System.out.println("Enter the first and last search dates separately. Both dates are included; repeat the date for one day only.");
@@ -191,7 +190,7 @@ public class Console {
     }
 
     private void bookAppointment() {
-        printHeading("Book an appointment for a patient");
+        printHeading("Booking an appointment");
         System.out.println("Choose the patient, then an unbooked slot showing the professional, clinic, date and time.");
         Patient patient = choose(patientDB.findAll(), "Patient to book for");
         Availability slot = choose(searchAvailability(null, null, LocalDateTime.MIN, LocalDateTime.MAX), "Appointment slot");
@@ -200,35 +199,19 @@ public class Console {
         if (service.isReferralRequired()) {
             List<Referral> eligible = referralDB.findAll().stream()
                     .filter(referral -> referral.isValidFor(patient, slot.getSchedule().getProfessional(), service)).toList();
-            referralID = choose(eligible, "Referral (use option 9 first if none)").getReferralID();
+            if (eligible.isEmpty()) {
+                throw new IllegalArgumentException("This consultation requires a referral. Referral creation is not available "
+                        + "in this PoC; choose General consultation to test booking.");
+            }
+            referralID = choose(eligible, "Referral").getReferralID();
         }
         Appointment appointment = bookAppointment(patient.getPatientID(), slot.getSchedule().getProfessional().getProfessionalID(),
                 slot.getSchedule().getClinic().getLocationID(), service.getServiceID(), slot.getStart(), referralID);
         System.out.println("Appointment confirmed: " + appointment);
     }
 
-    private void createReferral() {
-        printHeading("Refer a patient");
-        Patient patient = choose(patientDB.findAll(), "Patient");
-        HealthcareProfessional referring = choose(healthcareProfessionalDB.findAll(), "Referring professional");
-        String targetType = ask("Target: 1 = professional, 2 = specialty");
-        HealthcareProfessional targetProfessional = null;
-        MedicalSpeciality targetSpeciality = null;
-        if (targetType.equals("1")) {
-            targetProfessional = choose(healthcareProfessionalDB.findAll(), "Referred professional");
-        } else if (targetType.equals("2")) {
-            targetSpeciality = choose(medicalSpecialityDB.findAll(), "Referred specialty");
-        } else {
-            throw new IllegalArgumentException("Target must be 1 or 2.");
-        }
-        String priority = ask("Priority, e.g. routine or urgent");
-        String reason = ask("Clinical reason");
-        System.out.println("Referral created: " + referralDB.newReferral(patient, referring, priority, reason,
-                targetProfessional, targetSpeciality));
-    }
-
     private void exportAvailability() throws IOException {
-        printHeading("Save professionals' appointment slots to CSV");
+        printHeading("Export to CSV");
         String path = Checks.text(ask("Output CSV path, e.g. exports/availability.csv"), "Output path");
         if (Files.exists(Path.of(path)) && !ask("File exists. Overwrite? (yes/no)").equalsIgnoreCase("yes")) {
             System.out.println("Export cancelled.");
@@ -248,6 +231,16 @@ public class Console {
         System.out.println();
         System.out.print(prompt + ": ");
         return input.nextLine().strip();
+    }
+
+    private String askPhoneNumber() {
+        while (true) {
+            try {
+                return Checks.phoneNumber(ask("Telephone (required, digits only, e.g. 4381234567)"));
+            } catch (IllegalArgumentException exception) {
+                System.out.println("Error: " + exception.getMessage());
+            }
+        }
     }
 
     private LocalDate askDate(String prompt) {

@@ -119,6 +119,9 @@ Draft modelling assumptions for the four SSDs below.
 
 ## Iteration II PoC editing assumptions
 
+- Referral creation is not exposed in the Iteration II PoC menu. Test booking with
+  General consultation; specialist consultations still require a referral and cannot
+  be booked through this menu without one. Referral classes remain in the code skeleton.
 - The PoC assumes a successful workflow: callers do not use setters to change published
   availability or a referral target already used in a booking. Lock flags are omitted;
   setters validate their inputs but do not recheck existing bookings or schedule conflicts.
