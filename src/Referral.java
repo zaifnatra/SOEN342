@@ -1,13 +1,12 @@
 public final class Referral {
-    // Identity, patient and issuer are read-only; a booked referral also keeps its target.
     private final String referralID;
     private final Patient patient;
     private final HealthcareProfessional referringProfessional;
     private String priority;
+    private String status = "approved";
     private String clinicalReason;
     private HealthcareProfessional targetProfessional;
     private MedicalSpeciality targetSpeciality;
-    private boolean targetLocked;
 
     public Referral(String referralID, Patient patient, HealthcareProfessional referringProfessional,
                     String priority, String clinicalReason, HealthcareProfessional targetProfessional,
@@ -66,18 +65,11 @@ public final class Referral {
 
     // Switching target kind clears the previous target only after validation succeeds.
     public void setTarget(HealthcareProfessional targetProfessional, MedicalSpeciality targetSpeciality) {
-        if (targetLocked) {
-            throw new IllegalArgumentException("The target of a booked referral cannot be changed.");
-        }
         if ((targetProfessional == null) == (targetSpeciality == null)) {
             throw new IllegalArgumentException("Choose exactly one referral target.");
         }
         this.targetProfessional = targetProfessional;
         this.targetSpeciality = targetSpeciality;
-    }
-
-    void lockTarget() {
-        targetLocked = true;
     }
 
     // Equality uses stable identity, including when descriptive fields are edited.
@@ -92,7 +84,11 @@ public final class Referral {
     }
 
     public String getStatus() {
-        return "approved";
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = Checks.text(status, "Referral status");
     }
 
     public boolean isValidFor(Patient requestedPatient, HealthcareProfessional professional, MedicalService service) {

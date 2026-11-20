@@ -28,10 +28,6 @@ public final class Appointment {
                 || (referral != null && !referral.isValidFor(patient, professional, service))) {
             throw new IllegalArgumentException("A valid referral for this patient and professional/specialty is required.");
         }
-        slot.lock();
-        if (referral != null) {
-            referral.lockTarget();
-        }
     }
 
     public String getAppointmentID() {

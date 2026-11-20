@@ -117,6 +117,12 @@ Draft modelling assumptions for the four SSDs below.
 - We assume professional and specialty waitlist entries may include a date range.
 - We assume DateRangeWaitlistEntry requires only a date range, without a professional or specialty.
 
+## Iteration II PoC editing assumptions
+
+- The PoC assumes a successful workflow: callers do not use setters to change published
+  availability or a referral target already used in a booking. Lock flags are omitted;
+  setters validate their inputs but do not recheck existing bookings or schedule conflicts.
+
 ## Iteration II PoC CSV assumptions
 
 - Import asks only for a filename within `data/`, defaulting to `availability.csv`

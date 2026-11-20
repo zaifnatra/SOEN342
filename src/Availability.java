@@ -4,13 +4,11 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 public final class Availability {
-    // Identity and schedule are read-only. Published or booked slots cannot be moved in place.
     private final String availabilityID;
     private final ProfessionalSchedule schedule;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
-    private boolean locked;
 
     public Availability(String availabilityID, ProfessionalSchedule schedule, LocalDate date, LocalTime startTime,
                         LocalTime endTime) {
@@ -53,18 +51,11 @@ public final class Availability {
 
     // Validate the whole period before assigning any part of it.
     public void setPeriod(LocalDate date, LocalTime startTime, LocalTime endTime) {
-        if (locked) {
-            throw new IllegalArgumentException("Published or booked availability cannot be changed in place.");
-        }
         Checks.required(date, "Date");
         Checks.interval(startTime, endTime);
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-    }
-
-    void lock() {
-        locked = true;
     }
 
     // Equality uses stable identity, including when descriptive fields are edited.

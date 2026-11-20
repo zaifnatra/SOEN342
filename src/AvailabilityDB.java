@@ -23,8 +23,6 @@ public class AvailabilityDB {
             }
             checked.add(slot);
         }
-        // Lock only after the entire batch passes overlap validation.
-        slots.forEach(Availability::lock);
         availabilities.addAll(slots);
     }
 
