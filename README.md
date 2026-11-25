@@ -31,6 +31,15 @@ with **3**, then book with **6**. Set `JAVA_HOME` if your JDK is not on PATH.
 Data stays in memory. CSV exports availability only, not bookings or patients.
 Each availability interval is one bookable slot. This demo assumes authorized staff.
 
+## Referral checks
+
+With JDK 17 or newer on your PATH:
+
+```bash
+javac --release 17 -encoding UTF-8 -d out src/*.java tests/ReferralTest.java
+java -cp out ReferralTest
+```
+
 ## Use Cases
 
 The [initial requirements](artifacts/initial-requirements.md) list the critical and
