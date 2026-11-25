@@ -15,8 +15,10 @@ public final class ReferralTest {
 
         Referral professional = referrals.newReferral(patient, other, "normal", "Consultation", target, null);
         Referral speciality = referrals.newReferral(patient, other, "normal", "Consultation", null, cardiology);
-        check(professional instanceof ProfessionalReferral, "Factory should create a professional referral");
-        check(speciality instanceof SpecialityReferral, "Factory should create a specialty referral");
+        check(professional.getTargetProfessional() == target && professional.getTargetSpeciality() == null,
+                "Professional referral should have only a professional target");
+        check(speciality.getTargetProfessional() == null && speciality.getTargetSpeciality() == cardiology,
+                "Specialty referral should have only a specialty target");
         check(referrals.find(professional.getReferralID()) == professional, "Lookup should preserve the referral");
         check(professional.isValidFor(patient, target, service), "Named professional should be accepted");
         check(!professional.isValidFor(patient, colleague, service), "Same specialty is insufficient for a named referral");
@@ -32,14 +34,28 @@ public final class ReferralTest {
         rejects(() -> referrals.newReferral(patient, other, "normal", "Consultation", target, cardiology));
         rejects(() -> referrals.newReferral(patient, null, "normal", "Consultation", target, null));
         check(referrals.findAll().size() == 2, "Invalid requests must not be stored");
-        rejects(() -> new ProfessionalReferral("R3", patient, other, "normal", "Consultation", null));
-        rejects(() -> new SpecialityReferral("R3", patient, other, "normal", "Consultation", null));
-        ProfessionalReferral byProfessional = (ProfessionalReferral) professional;
-        SpecialityReferral bySpeciality = (SpecialityReferral) speciality;
-        rejects(() -> byProfessional.setTargetProfessional(null));
-        rejects(() -> bySpeciality.setTargetSpeciality(null));
-        check(byProfessional.getTargetProfessional() == target, "Invalid edit must preserve the professional");
-        check(bySpeciality.getTargetSpeciality() == cardiology, "Invalid edit must preserve the specialty");
+        rejects(() -> new Referral("R3", patient, other, "normal", "Consultation", null, null));
+        rejects(() -> new Referral("R3", patient, other, "normal", "Consultation", target, cardiology));
+        for (Referral referral : new Referral[]{professional, speciality}) {
+            HealthcareProfessional previousProfessional = referral.getTargetProfessional();
+            MedicalSpeciality previousSpeciality = referral.getTargetSpeciality();
+            rejects(() -> referral.setTargetProfessional(null));
+            rejects(() -> referral.setTargetSpeciality(null));
+            rejects(() -> referral.setTarget(null, null));
+            rejects(() -> referral.setTarget(target, cardiology));
+            check(referral.getTargetProfessional() == previousProfessional
+                            && referral.getTargetSpeciality() == previousSpeciality,
+                    "Rejected edits must preserve the previous target");
+        }
+
+        professional.setTargetSpeciality(cardiology);
+        check(professional.getTargetProfessional() == null && professional.getTargetSpeciality() == cardiology,
+                "Switching to a specialty must clear the professional target");
+        check(professional.isValidFor(patient, colleague, service), "Switched specialty should accept a colleague");
+        professional.setTargetProfessional(target);
+        check(professional.getTargetProfessional() == target && professional.getTargetSpeciality() == null,
+                "Switching to a professional must clear the specialty target");
+        check(!professional.isValidFor(patient, colleague, service), "Switched professional should exclude a colleague");
 
         ClinicLocation clinic = new ClinicLocation("C1", "Test Clinic");
         Availability slot = new Availability(new ProfessionalSchedule("SC1", target, clinic),

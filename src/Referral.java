@@ -1,18 +1,22 @@
-public abstract class Referral {
+public final class Referral {
     private final String referralID;
     private final Patient patient;
     private final HealthcareProfessional referringProfessional;
     private String priority;
     private String status = "approved";
     private String clinicalReason;
+    private HealthcareProfessional targetProfessional;
+    private MedicalSpeciality targetSpeciality;
 
-    protected Referral(String referralID, Patient patient, HealthcareProfessional referringProfessional,
-                       String priority, String clinicalReason) {
+    public Referral(String referralID, Patient patient, HealthcareProfessional referringProfessional,
+                    String priority, String clinicalReason, HealthcareProfessional targetProfessional,
+                    MedicalSpeciality targetSpeciality) {
         this.referralID = Checks.text(referralID, "Referral ID");
         this.patient = Checks.required(patient, "Patient");
         this.referringProfessional = Checks.required(referringProfessional, "Referring professional");
         setPriority(priority);
         setClinicalReason(clinicalReason);
+        setTarget(targetProfessional, targetSpeciality);
     }
 
     public String getReferralID() {
@@ -43,6 +47,31 @@ public abstract class Referral {
         this.clinicalReason = Checks.text(clinicalReason, "Clinical reason");
     }
 
+    public HealthcareProfessional getTargetProfessional() {
+        return targetProfessional;
+    }
+
+    public void setTargetProfessional(HealthcareProfessional targetProfessional) {
+        setTarget(targetProfessional, null);
+    }
+
+    public MedicalSpeciality getTargetSpeciality() {
+        return targetSpeciality;
+    }
+
+    public void setTargetSpeciality(MedicalSpeciality targetSpeciality) {
+        setTarget(null, targetSpeciality);
+    }
+
+    // Switching target kind clears the previous target only after validation succeeds.
+    public void setTarget(HealthcareProfessional targetProfessional, MedicalSpeciality targetSpeciality) {
+        if ((targetProfessional == null) == (targetSpeciality == null)) {
+            throw new IllegalArgumentException("Choose exactly one referral target.");
+        }
+        this.targetProfessional = targetProfessional;
+        this.targetSpeciality = targetSpeciality;
+    }
+
     // Equality uses stable identity, including when descriptive fields are edited.
     @Override
     public boolean equals(Object other) {
@@ -63,15 +92,13 @@ public abstract class Referral {
     }
 
     public boolean isValidFor(Patient requestedPatient, HealthcareProfessional professional, MedicalService service) {
-        return patient.equals(requestedPatient) && matchesTarget(professional);
+        return patient.equals(requestedPatient) && (professional.equals(targetProfessional)
+                || professional.getSpeciality().equals(targetSpeciality));
     }
-
-    protected abstract boolean matchesTarget(HealthcareProfessional professional);
-
-    protected abstract String getTargetName();
 
     @Override
     public String toString() {
-        return referralID + " | " + patient.getFirstName() + " " + patient.getLastName() + " → " + getTargetName() + " | " + getStatus();
+        String target = targetProfessional == null ? targetSpeciality.getSpecialtyName() : targetProfessional.getName();
+        return referralID + " | " + patient.getFirstName() + " " + patient.getLastName() + " → " + target + " | " + getStatus();
     }
 }
