@@ -1,4 +1,4 @@
-public final class Referral {
+public class Referral {
     private final String referralID;
     private final Patient patient;
     private final HealthcareProfessional referringProfessional;
@@ -63,10 +63,16 @@ public final class Referral {
         setTarget(null, targetSpeciality);
     }
 
-    // Switching target kind clears the previous target only after validation succeeds.
-    public void setTarget(HealthcareProfessional targetProfessional, MedicalSpeciality targetSpeciality) {
+    // Validate before changing either field; specialized referrals keep their target kind.
+    public final void setTarget(HealthcareProfessional targetProfessional, MedicalSpeciality targetSpeciality) {
         if ((targetProfessional == null) == (targetSpeciality == null)) {
             throw new IllegalArgumentException("Choose exactly one referral target.");
+        }
+        if (this instanceof ProfessionalReferral && targetProfessional == null) {
+            throw new IllegalArgumentException("A professional referral requires a professional target.");
+        }
+        if (this instanceof SpecialityReferral && targetSpeciality == null) {
+            throw new IllegalArgumentException("A speciality referral requires a speciality target.");
         }
         this.targetProfessional = targetProfessional;
         this.targetSpeciality = targetSpeciality;
