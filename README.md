@@ -34,7 +34,7 @@ Each availability interval is one bookable slot. This demo assumes authorized st
 ## Referral checks
 
 The referral factory creates a `ProfessionalReferral` or `SpecialityReferral` with
-exactly one target. Both inherit the target properties from `Referral`; edits can
+exactly one target. Both inherit the target properties from abstract `Referral`; edits can
 replace the target within its kind, but cannot switch a specialized referral's kind.
 
 With JDK 17 or newer on your PATH:

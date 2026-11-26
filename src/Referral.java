@@ -1,4 +1,4 @@
-public class Referral {
+public abstract class Referral {
     private final String referralID;
     private final Patient patient;
     private final HealthcareProfessional referringProfessional;
@@ -8,9 +8,9 @@ public class Referral {
     private HealthcareProfessional targetProfessional;
     private MedicalSpeciality targetSpeciality;
 
-    public Referral(String referralID, Patient patient, HealthcareProfessional referringProfessional,
-                    String priority, String clinicalReason, HealthcareProfessional targetProfessional,
-                    MedicalSpeciality targetSpeciality) {
+    protected Referral(String referralID, Patient patient, HealthcareProfessional referringProfessional,
+                       String priority, String clinicalReason, HealthcareProfessional targetProfessional,
+                       MedicalSpeciality targetSpeciality) {
         this.referralID = Checks.text(referralID, "Referral ID");
         this.patient = Checks.required(patient, "Patient");
         this.referringProfessional = Checks.required(referringProfessional, "Referring professional");

@@ -37,8 +37,6 @@ public final class ReferralTest {
         rejects(() -> referrals.newReferral(patient, null, "normal", "Consultation", target, null));
         rejects(() -> referrals.newReferral(patient, null, "normal", "Consultation", null, cardiology));
         check(referrals.findAll().size() == 2, "Invalid requests must not be stored");
-        rejects(() -> new Referral("R3", patient, other, "normal", "Consultation", null, null));
-        rejects(() -> new Referral("R3", patient, other, "normal", "Consultation", target, cardiology));
         rejects(() -> new ProfessionalReferral("R3", patient, other, "normal", "Consultation", null));
         rejects(() -> new SpecialityReferral("R3", patient, other, "normal", "Consultation", null));
         for (Referral referral : new Referral[]{professional, speciality}) {
