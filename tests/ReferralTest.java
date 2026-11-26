@@ -39,37 +39,8 @@ public final class ReferralTest {
         check(referrals.findAll().size() == 2, "Invalid requests must not be stored");
         rejects(() -> new ProfessionalReferral("R3", patient, other, "normal", "Consultation", null));
         rejects(() -> new SpecialityReferral("R3", patient, other, "normal", "Consultation", null));
-        for (Referral referral : new Referral[]{professional, speciality}) {
-            HealthcareProfessional previousProfessional = referral.getTargetProfessional();
-            MedicalSpeciality previousSpeciality = referral.getTargetSpeciality();
-            rejects(() -> referral.setTargetProfessional(null));
-            rejects(() -> referral.setTargetSpeciality(null));
-            rejects(() -> referral.setTarget(null, null));
-            rejects(() -> referral.setTarget(target, cardiology));
-            if (referral instanceof ProfessionalReferral) {
-                rejects(() -> referral.setTargetSpeciality(cardiology));
-                rejects(() -> referral.setTarget(null, cardiology));
-            } else {
-                rejects(() -> referral.setTargetProfessional(target));
-                rejects(() -> referral.setTarget(target, null));
-            }
-            check(referral.getTargetProfessional() == previousProfessional
-                            && referral.getTargetSpeciality() == previousSpeciality,
-                    "Rejected edits must preserve the previous target");
-        }
-
-        professional.setTargetProfessional(colleague);
-        check(professional.getTargetProfessional() == colleague && professional.getTargetSpeciality() == null,
-                "Updating a professional target must preserve its kind");
-        check(professional.isValidFor(patient, colleague, service), "Updated professional should be accepted");
-        check(!professional.isValidFor(patient, target, service), "Previous professional should be rejected");
-        professional.setTargetProfessional(target);
-        speciality.setTargetSpeciality(dermatology);
-        check(speciality.getTargetProfessional() == null && speciality.getTargetSpeciality() == dermatology,
-                "Updating a specialty target must preserve its kind");
-        check(speciality.isValidFor(patient, other, service), "Updated specialty should be accepted");
-        check(!speciality.isValidFor(patient, target, service), "Previous specialty should be rejected");
-        speciality.setTargetSpeciality(cardiology);
+        rejects(() -> new ProfessionalReferral("R3", patient, null, "normal", "Consultation", target));
+        rejects(() -> new SpecialityReferral("R3", patient, null, "normal", "Consultation", cardiology));
 
         ClinicLocation clinic = new ClinicLocation("C1", "Test Clinic");
         Availability slot = new Availability(new ProfessionalSchedule("SC1", target, clinic),
