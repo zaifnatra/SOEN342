@@ -10,8 +10,13 @@ public class ReferralDB {
 
     public Referral newReferral(Patient patient, HealthcareProfessional referring, String priority, String reason,
                                 HealthcareProfessional targetProfessional, MedicalSpeciality targetSpeciality) {
-        Referral referral = new Referral("R" + (referrals.size() + 1), patient, referring, priority, reason,
-                targetProfessional, targetSpeciality);
+        if ((targetProfessional == null) == (targetSpeciality == null)) {
+            throw new IllegalArgumentException("Choose exactly one referral target.");
+        }
+        String referralID = "R" + (referrals.size() + 1);
+        Referral referral = targetProfessional != null
+                ? new ProfessionalReferral(referralID, patient, referring, priority, reason, targetProfessional)
+                : new SpecialityReferral(referralID, patient, referring, priority, reason, targetSpeciality);
         referrals.add(referral);
         return referral;
     }
