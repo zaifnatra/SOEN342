@@ -24,6 +24,9 @@ public class AvailabilityDB {
             checked.add(slot);
         }
         availabilities.addAll(slots);
+        for (Availability slot : slots) {
+            slot.getSchedule().addAvailability(slot);
+        }
     }
 
     public List<Availability> findAvailable(String professionalID, String clinicLocationID,

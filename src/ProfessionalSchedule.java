@@ -12,6 +12,7 @@ public final class ProfessionalSchedule {
     private final String scheduleID;
     private final HealthcareProfessional professional;
     private final ClinicLocation clinic;
+    private final List<Availability> availabilities = new ArrayList<>();
 
     public ProfessionalSchedule(String scheduleID, HealthcareProfessional professional, ClinicLocation clinic) {
         this.scheduleID = Checks.text(scheduleID, "Schedule ID");
@@ -29,6 +30,15 @@ public final class ProfessionalSchedule {
 
     public ClinicLocation getClinic() {
         return clinic;
+    }
+
+    public List<Availability> getAvailabilities() {
+        return List.copyOf(availabilities);
+    }
+
+    // Called by AvailabilityDB only after the batch has passed overlap validation.
+    void addAvailability(Availability availability) {
+        availabilities.add(Checks.required(availability, "Availability"));
     }
 
     // Equality uses stable identity, including when descriptive fields are edited.
