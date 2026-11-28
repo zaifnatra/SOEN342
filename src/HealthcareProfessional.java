@@ -5,14 +5,16 @@ public final class HealthcareProfessional {
     private String lastName;
     private String title;
     private final MedicalSpeciality speciality;
+    private final ProfessionalType type;
 
     public HealthcareProfessional(String professionalID, String firstName, String lastName, String title,
-                                  MedicalSpeciality speciality) {
+                                  MedicalSpeciality speciality, ProfessionalType type) {
         this.professionalID = Checks.text(professionalID, "Professional ID");
         setFirstName(firstName);
         setLastName(lastName);
         setTitle(title);
         this.speciality = Checks.required(speciality, "Specialty");
+        this.type = Checks.required(type, "Professional type");
     }
 
     public String getProfessionalID() {
@@ -47,6 +49,10 @@ public final class HealthcareProfessional {
         return speciality;
     }
 
+    public ProfessionalType getType() {
+        return type;
+    }
+
     // Equality uses stable identity, including when descriptive fields are edited.
     @Override
     public boolean equals(Object other) {
@@ -64,6 +70,6 @@ public final class HealthcareProfessional {
 
     @Override
     public String toString() {
-        return title + " " + getName() + " | " + speciality;
+        return title + " " + getName() + " | " + type + " | " + speciality;
     }
 }

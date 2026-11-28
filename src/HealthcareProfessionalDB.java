@@ -14,13 +14,15 @@ public class HealthcareProfessionalDB {
                 && professional.getLastName().equalsIgnoreCase(lastName.strip())).findFirst().orElse(null);
     }
 
-    public HealthcareProfessional findOrCreate(String firstName, String lastName, String title, MedicalSpeciality speciality) {
+    public HealthcareProfessional findOrCreate(String firstName, String lastName, String title,
+                                               MedicalSpeciality speciality, ProfessionalType type) {
         HealthcareProfessional candidate = new HealthcareProfessional("HP" + (professionals.size() + 1),
-                firstName, lastName, title, speciality);
+                firstName, lastName, title, speciality, type);
         HealthcareProfessional existing = findByName(candidate.getFirstName(), candidate.getLastName());
         if (existing != null) {
-            if (!existing.getTitle().equalsIgnoreCase(candidate.getTitle()) || !existing.getSpeciality().equals(speciality)) {
-                throw new IllegalArgumentException("This professional's name already has different title/specialty details.");
+            if (!existing.getTitle().equalsIgnoreCase(candidate.getTitle()) || !existing.getSpeciality().equals(speciality)
+                    || existing.getType() != type) {
+                throw new IllegalArgumentException("This professional's name already has different title/type/specialty details.");
             }
             return existing;
         }

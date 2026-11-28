@@ -132,15 +132,16 @@ public class Console {
         String firstName = Checks.text(ask("First name"), "First name");
         String lastName = Checks.text(ask("Last name"), "Last name");
         String title = Checks.text(ask("Title, e.g. Dr. or Nurse Practitioner"), "Title");
+        ProfessionalType type = choose(List.of(ProfessionalType.values()), "Professional type");
         String specialty = Checks.text(ask("Specialty"), "Specialty");
         String address = Checks.text(ask("Clinic name/address"), "Clinic name/address");
         HealthcareProfessional existing = healthcareProfessionalDB.findByName(firstName, lastName);
         if (existing != null && (!existing.getTitle().equalsIgnoreCase(title)
-                || !existing.getSpeciality().getSpecialtyName().equalsIgnoreCase(specialty))) {
-            throw new IllegalArgumentException("This professional already has different title/specialty details.");
+                || existing.getType() != type || !existing.getSpeciality().getSpecialtyName().equalsIgnoreCase(specialty))) {
+            throw new IllegalArgumentException("This professional already has different title/type/specialty details.");
         }
         HealthcareProfessional professional = healthcareProfessionalDB.findOrCreate(firstName, lastName, title,
-                medicalSpecialityDB.findOrCreate(specialty));
+                medicalSpecialityDB.findOrCreate(specialty), type);
         ClinicLocation clinic = clinicLocationDB.findOrCreate(address);
         professionalScheduleDB.findOrCreate(professional, clinic);
         System.out.println("Registered " + professional + " at " + clinic);
