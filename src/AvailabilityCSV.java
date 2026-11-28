@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class AvailabilityCSV {
-    private static final List<String> HEADERS = List.of("First Name", "Last Name", "Title", "Specialty", "Date", "Start", "End");
+    private static final List<String> HEADERS = List.of("First Name", "Last Name", "Title", "Type", "Specialty", "Date", "Start", "End");
     private final AvailabilityDB availabilityDB;
     private final ProfessionalScheduleDB professionalScheduleDB;
     private final HealthcareProfessionalDB healthcareProfessionalDB;
@@ -52,8 +52,8 @@ public class AvailabilityCSV {
                 for (CsvSlot existing : known) {
                     if (candidate.sameProfessional(existing)) {
                         if (!candidate.title().equalsIgnoreCase(existing.title())
-                                || !candidate.specialty().equalsIgnoreCase(existing.specialty())) {
-                            throw new IllegalArgumentException("Conflicting title/specialty for " + candidate.firstName() + " " + candidate.lastName());
+                            || candidate.type() != existing.type() || !candidate.specialty().equalsIgnoreCase(existing.specialty())) {
+                            throw new IllegalArgumentException("Conflicting title/type/specialty for " + candidate.firstName() + " " + candidate.lastName());
                         }
                         if (candidate.date().equals(existing.date()) && candidate.start().isBefore(existing.end())
                                 && existing.start().isBefore(candidate.end())) {
@@ -78,7 +78,7 @@ public class AvailabilityCSV {
         List<Availability> slots = new ArrayList<>();
         for (CsvSlot row : pending) {
             MedicalSpeciality speciality = medicalSpecialityDB.findOrCreate(row.specialty());
-            HealthcareProfessional professional = healthcareProfessionalDB.findOrCreate(row.firstName(), row.lastName(), row.title(), speciality);
+            HealthcareProfessional professional = healthcareProfessionalDB.findOrCreate(row.firstName(), row.lastName(), row.title(), speciality, row.type());
             ClinicLocation clinic = clinicLocationDB.findOrCreate(row.clinic());
             ProfessionalSchedule schedule = professionalScheduleDB.findOrCreate(professional, clinic);
             slots.add(new Availability(schedule, row.date(), row.start(), row.end()));
@@ -94,7 +94,7 @@ public class AvailabilityCSV {
         List<Availability> slots = availabilityDB.findAll();
         for (Availability slot : slots) {
             CsvSlot row = CsvSlot.from(slot);
-            text.append(Csv.writeRow(List.of(row.firstName(), row.lastName(), row.title(), row.specialty(),
+            text.append(Csv.writeRow(List.of(row.firstName(), row.lastName(), row.title(), row.type().name(), row.specialty(),
                     row.date().toString(), row.start().toString(), row.end().toString(), row.clinic())));
         }
         Path target = Path.of(filePath).toAbsolutePath();
@@ -121,28 +121,35 @@ public class AvailabilityCSV {
         for (String header : HEADERS) {
             Checks.text(fields.get(headers.indexOf(header)), header);
         }
+        ProfessionalType type;
+        try {
+            type = ProfessionalType.valueOf(fields.get(headers.indexOf("Type")));
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException("Type must be one of: " + String.join(", ",
+                    java.util.Arrays.stream(ProfessionalType.values()).map(Enum::name).toList()));
+        }
         LocalDate date = LocalDate.parse(fields.get(headers.indexOf("Date")));
         LocalTime start = LocalTime.parse(fields.get(headers.indexOf("Start")));
         LocalTime end = LocalTime.parse(fields.get(headers.indexOf("End")));
         Checks.interval(start, end);
         String clinic = headers.contains("Clinic") ? Checks.text(fields.get(headers.indexOf("Clinic")), "Clinic") : "Main Clinic";
         return new CsvSlot(fields.get(headers.indexOf("First Name")), fields.get(headers.indexOf("Last Name")),
-                fields.get(headers.indexOf("Title")), fields.get(headers.indexOf("Specialty")), clinic, date, start, end);
+                fields.get(headers.indexOf("Title")), type, fields.get(headers.indexOf("Specialty")), clinic, date, start, end);
     }
 
     private void validateProfessional(CsvSlot row) {
         HealthcareProfessional existing = healthcareProfessionalDB.findByName(row.firstName(), row.lastName());
-        if (existing != null && (!existing.getTitle().equalsIgnoreCase(row.title())
+        if (existing != null && (!existing.getTitle().equalsIgnoreCase(row.title()) || existing.getType() != row.type()
                 || !existing.getSpeciality().getSpecialtyName().equalsIgnoreCase(row.specialty()))) {
-            throw new IllegalArgumentException("This professional already has different title/specialty details.");
+            throw new IllegalArgumentException("This professional already has different title/type/specialty details.");
         }
     }
 
-    private record CsvSlot(String firstName, String lastName, String title, String specialty, String clinic,
+    private record CsvSlot(String firstName, String lastName, String title, ProfessionalType type, String specialty, String clinic,
                            LocalDate date, LocalTime start, LocalTime end) {
         static CsvSlot from(Availability slot) {
             HealthcareProfessional professional = slot.getSchedule().getProfessional();
-            return new CsvSlot(professional.getFirstName(), professional.getLastName(), professional.getTitle(),
+            return new CsvSlot(professional.getFirstName(), professional.getLastName(), professional.getTitle(), professional.getType(),
                     professional.getSpeciality().getSpecialtyName(), slot.getSchedule().getClinic().getAddress(),
                     slot.getDate(), slot.getStartTime(), slot.getEndTime());
         }
