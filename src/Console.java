@@ -19,6 +19,8 @@ public class Console {
     private final MedicalServiceDB medicalServiceDB = new MedicalServiceDB();
     private final ReferralDB referralDB = new ReferralDB();
     private final AppointmentDB appointmentDB = new AppointmentDB();
+    private final CalendarExportController calendarExportController =
+        new CalendarExportController(appointmentDB);
     private final AvailabilityDB availabilityDB = new AvailabilityDB(appointmentDB);
     private final RegisterPatientController registerPatientController = new RegisterPatientController(patientDB);
     private final AvailabilityCSV availabilityCSV = new AvailabilityCSV(availabilityDB, professionalScheduleDB,
@@ -49,6 +51,7 @@ public class Console {
                     6. Booking an appointment
 
                     7. Export to CSV
+                    8. Export booked appointments to iCalendar (.ics)
 
                     0. Exit (discard session data)
                     """);
@@ -61,11 +64,12 @@ public class Console {
                     case "5" -> searchAvailability();
                     case "6" -> bookAppointment();
                     case "7" -> exportAvailability();
+                    case "8" -> exportCalendar(); 
                     case "0" -> {
                         System.out.println("Goodbye. Session data is discarded; exported CSV files remain.");
                         return;
                     }
-                    default -> System.out.println("Choose a menu number from 0 to 7.");
+                    default -> System.out.println("Choose a menu number from 0 to 8.");
                 }
             } catch (IllegalArgumentException | IOException exception) {
                 System.out.println("Error: " + exception.getMessage());
@@ -212,6 +216,7 @@ public class Console {
     }
 
     private void exportAvailability() throws IOException {
+        
         printHeading("Export to CSV");
         String path = Checks.text(ask("Output CSV path, e.g. exports/availability.csv"), "Output path");
         if (Files.exists(Path.of(path)) && !ask("File exists. Overwrite? (yes/no)").equalsIgnoreCase("yes")) {
@@ -221,6 +226,94 @@ public class Console {
         System.out.println("Exported " + exportAvailability(path) + " slots to " + Path.of(path).toAbsolutePath());
         System.out.println("Availability only; patient records, referrals and bookings are not exported.");
     }
+
+
+private void exportCalendar() throws IOException {
+    printHeading("Export booked appointments to iCalendar");
+
+    System.out.println("""
+            1. Export by healthcare professional
+            2. Export by patient
+            3. Export by referral type
+            """);
+
+    int option = chooseNumber("Export type", 1, 3);
+
+    String selectedID = null;
+    String referralType = null;
+
+    switch (option) {
+        case 1 -> {
+            HealthcareProfessional professional = choose(
+                    healthcareProfessionalDB.findAll(),
+                    "Healthcare professional");
+
+            selectedID = professional.getProfessionalID();
+        }
+
+        case 2 -> {
+            Patient patient = choose(
+                    patientDB.findAll(), "Patient");
+
+            selectedID = patient.getPatientID();
+        }
+
+        case 3 -> {
+            referralType = choose(
+                    List.of("professional", "speciality"),
+                    "Referral type");
+        }
+    }
+
+    String dateInput = ask(
+            "Start date (YYYY-MM-DD, Enter = today)");
+
+    LocalDate startDate = null;
+
+    if (!dateInput.isBlank()) {
+        try {
+            startDate = LocalDate.parse(dateInput);
+        } catch (DateTimeParseException exception) {
+            throw new IllegalArgumentException(
+                    "Enter a valid start date in YYYY-MM-DD format.");
+        }
+    }
+
+    String filename = ask(
+            "Output filename (Enter = appointments.ics)");
+
+    if (filename.isBlank()) {
+        filename = "appointments.ics";
+    }
+
+    if (!filename.toLowerCase(java.util.Locale.ROOT).endsWith(".ics")) {
+        filename += ".ics";
+    }
+
+    Path filePath = Path.of(filename);
+
+    if (Files.exists(filePath)
+            && !ask("File exists. Overwrite? (yes/no)")
+                    .equalsIgnoreCase("yes")) {
+        System.out.println("Export cancelled.");
+        return;
+    }
+
+    switch (option) {
+        case 1 -> calendarExportController.exportByProfessional(
+                selectedID, startDate, filePath);
+
+        case 2 -> calendarExportController.exportByPatient(
+                selectedID, startDate, filePath);
+
+        case 3 -> calendarExportController.exportByReferralType(
+                referralType, startDate, filePath);
+    }
+
+    System.out.println("Calendar exported successfully to "
+            + filePath.toAbsolutePath());
+}
+
 
     private void printHeading(String title) {
         System.out.println("\n------------------------------------------------------------");
