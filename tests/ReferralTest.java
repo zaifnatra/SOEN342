@@ -7,9 +7,9 @@ public final class ReferralTest {
         Patient otherPatient = new Patient("P2", "Other", "Patient", LocalDate.of(2000, 1, 1), "5145550101", null);
         MedicalSpeciality cardiology = new MedicalSpeciality("S1", "Cardiology");
         MedicalSpeciality dermatology = new MedicalSpeciality("S2", "Dermatology");
-        HealthcareProfessional target = new HealthcareProfessional("H1", "Alex", "One", "Dr", cardiology);
-        HealthcareProfessional colleague = new HealthcareProfessional("H2", "Sam", "Two", "Dr", cardiology);
-        HealthcareProfessional other = new HealthcareProfessional("H3", "Lee", "Three", "Dr", dermatology);
+        HealthcareProfessional target = new HealthcareProfessional("H1", "Alex", "One", "Dr", cardiology, ProfessionalType.Specialist);
+        HealthcareProfessional colleague = new HealthcareProfessional("H2", "Sam", "Two", "Dr", cardiology, ProfessionalType.Specialist);
+        HealthcareProfessional other = new HealthcareProfessional("H3", "Lee", "Three", "Dr", dermatology, ProfessionalType.Specialist);
         MedicalService service = new MedicalService("M1", "Consultation", true);
         ReferralDB referrals = new ReferralDB();
 
